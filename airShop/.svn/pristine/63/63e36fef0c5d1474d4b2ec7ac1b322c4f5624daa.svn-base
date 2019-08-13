@@ -1,0 +1,799 @@
+<template>
+	<view class="submitam">
+		<view v-for="(item,index) in goodsList" :key=index>
+		<!-- 预约信息 -->
+		<view class="sub-shop">
+			<image src="/static/newimg/redquan.png" mode=""></image>
+			<text>{{item.cart.shop}}</text>
+		</view>
+			<view class="sam_info">
+				<view class="info_left">
+					<image :src="item.cart.picUrl" class="goodimg" mode=""></image>
+				</view>
+				<view class="info_right">
+					<view class="title">
+					<!-- <text class="red">美食</text> -->
+						{{item.cart.goodsName}}
+					</view>
+					<view class="info_other">
+						<view class="info_li" v-for="(it,j) in item.cart.specifications" :key="j">
+							<text>{{it}}</text>
+						</view>
+						<!-- <view class="info_li">
+							<text>尺码</text>：<text>S</text>
+						</view> -->
+					</view>
+					<view class="info_price">
+						<view class="price">
+							<text class="num">{{item.cart.price}}</text>
+						</view>
+						<!-- <view> -->
+							<!-- <view class="dis" @click="disnum">
+								<image :src="yuyue_num<2?(disimg+'2.png'):(disimg+'1.png')" mode="" class="opimg"></image>
+							</view>
+							<input type="number" :value="yuyue_num" v-model="yuyue_num" />
+							<view class="add" @click="addnum">
+								<image :src="addimg" mode="" class="opimg"></image>
+							</view> -->
+							<!-- <uni-number-box class="add_dis" :min="1" :max="item.cart.stock"   :value="item.cart.number" :isMax="item.cart.number>=item.cart.stock?true:false"
+							 :isMin="item.cart.number===1" :index="index"></uni-number-box> -->
+							<text type="number title"/>X {{item.cart.number}}</text>
+						<!-- </view> -->
+					</view>
+				</view>
+			</view>
+			<!-- 预约信息 end-->
+			<!-- 取货门店 +时间-->
+			<view class="sam_mendian_time">
+				<view class="mendian">
+					<view class="mendian_left">
+						取货门店：
+					</view>
+					<view class="mendian_right">
+						<view class="mendian_li" v-for="(it,ind) of item.storeList" :key="ind">
+							<text class="address">{{it.name}}</text>
+							<checkbox-group  @change="checkaddress(index,ind)">
+								<label class="checkbox">
+									<radio class="box" color="#FF0000" :value="item.address" :checked="item.storeList[ind].seleted" />
+								</label>
+							</checkbox-group>
+						</view>
+					</view>
+				</view>
+				<view class="st-time">
+					<view class="time">
+						<view class="time_left">
+							取货时间：
+						</view>
+						<view class="time_right">
+							<picker mode="time" class="p_time" :value="item.time" start="09:01" end="21:01" data-a="time" @change="bindTimeChange">
+								<view class="uni-input">{{time}}></view>
+							</picker>
+							<picker mode="date" class="p_data" :value="item.date" :start="startDate" :end="endDate" data-a="day" @change="bindDateChange">
+								<view class="uni-input">{{date}}</view>
+							</picker>
+						</view>
+					</view>
+					<view class="st-times">
+						请您按时取货，过期将不再为您预留产品！
+					</view>
+					<view class="time st-address">
+						<view class="time_left">
+							门店地址：
+						</view>
+						<view class="time_right" v-for="(it,ind) of item.storeList">
+						<image src="/static/newimg/address1.png" mode=""></image>
+							{{it.comName}}{{it.posdes}}{{it.name}}
+						</view>
+					</view>
+					<view class="time st-address" v-for="(it,ind) of item.storeList">
+						<view class="time_left">
+							门店联系电话：
+						</view>
+						<view class="time_right">
+							{{it.phone}}
+						</view>
+					</view>
+					
+				</view>
+				
+			</view>
+			<!-- 取货门店 +时间 end-->
+			<!-- 取货时间规则+门店信息+发票*** -->
+			<view class="sam_tmf">
+				<!-- <view class="time">
+					取货时间的规则详情
+				</view> -->
+				<!-- <view class="tmf_mendian"  v-for="(it,ind) of item.storeList" :key="ind" v-if="it.seleted==true">
+					 <view class="tmf_address">
+						<view class="tml_left">
+							门店详细地址：
+						</view>
+						<view class="tmf_right">
+							{{it.comName}}{{it.posdes}}{{it.name}}
+						</view>
+					</view>
+					<view class="tmf_address">
+						<view class="tml_left">
+							门店联系电话
+						</view>
+						<view class="tmf_right">
+							{{it.phone}}
+						</view>
+					</view>
+				</view> -->
+				<view class="tmf_list">
+					<view class="dingdan_li">
+						<view class="dingd_left">
+							发票
+						</view>
+						<view class="dingd_right">
+							<text class="red">预约商品</text>
+							线下开具
+						</view>
+					</view>
+					<view class="dingdan_li">
+						<view class="dingd_left">
+							优惠券
+						</view>
+						<view class="dingd_right">
+							无可用优惠券
+						</view>
+					</view>
+					<view class="dingdan_li">
+						<view class="dingd_left">
+							积分
+							<text class="jifens">共0积分，可抵0元</text>
+						</view>
+						<switch checked  color="#FF0000" class="dingd_right"/>
+						
+					</view>
+					<!-- <view class="dingdan_li">
+						<view class="dingd_left">
+							<text>积分</text>
+							<text class="jifen">共<text class="">78</text>,满100可用</text>
+						</view>
+						<view class="dingd_right">
+							可抵用0.00元
+						</view>
+					</view> -->
+				</view>
+			</view>
+			<!-- 取货时间规则+门店信息+发票*** end-->
+			
+			<view class="shou_list">
+				<view class="shou_li">
+					<view class="shou_left">
+						商品售价
+					</view>
+					<view class="shou_right">
+						<text>￥</text>{{item.cart.price*item.cart.number}}
+					</view>
+				</view>
+				<view class="shou_li">
+					<view class="shou_left">
+						促销活动
+					</view>
+					<view class="shou_right red">
+						<text>-￥</text>0
+					</view>
+				</view>
+			</view>
+			
+			<view class="window" @click="windowshow(true)">
+				预定须知
+			</view>
+		</view>
+		<!-- 确认预约 -->
+		<view class="confirm">
+			<view class="last_price">
+				<view class="price_right">
+					{{goodsTotalPrice}}
+				</view>
+				<view class="con_can">
+					参考价格（以门店实际售价为准）
+				</view>
+			</view>
+			<view class="confirm_btn" @click="recommandOrder">
+				确认预约
+			</view>
+		</view>
+		<!-- 确认预约 end-->
+		<!-- 弹窗 -->
+		<view class="windows" v-show="windowflag" @click="windowshow(false)">
+			<view class="window-content">
+				<view class="title">
+					预订须知
+				</view>
+				<view class="text">
+					1、使用电商线上预定线下取货服务，您可以在到机场提货前<text class="red">7天（168小时）-前1天（24小时）</text>完成下单，以便您顺利提取。
+				</view>
+				<view class="text">
+					<view class="">2、我们免费为您预定，预定后即为您备货，提货时请您主动出示，请您认真阅读以下提示：</view>
+					<view class="">（1）当您预约成功，系统自动生成提货二维码，提货时请主动出示，让您的包裹找对主人。</view>
+					<view class="">（2）订单取消方式：提货前1小时可以通过系统操作取消订单，提货<text class="red">前1小时</text>内，您将无法取消订单，如有变动，请联系客服（客服入口的页面展示位置）。</view>
+					<view class="">（3）提货时间<text class="red">2个小时</text>后仍未提货的订单将被取消。</view>
+					<view class="">（4）如顾客连续两次或累计三次预定后不提取，被系统取消订单的，将有可能失去预定资格。</view>
+					<view class="">（5）如发现顾客存在恶意下单、非正常购买等账户异常情况，我方有权采取封号措施，该顾客3个月内不享有预定资格。</view>
+				</view>
+			</view>
+		</view>
+		<!-- 弹窗 end-->
+	</view>
+</template>
+
+<script>
+// import uniNumberBox from "@/components/uni-number-box/uni-number-box.vue"
+import uniNumberBox from '@/components/uni-number-box.vue'
+	export default {
+		components: {uniNumberBox},
+		data() {
+			return {
+				comId:0,
+				goodsTotalPrice:0,
+				goodsList:[
+					
+					
+					
+				],
+				time: '12:00', //取件时间
+				// disimg: '../../static/dis', //减号
+				// addimg: '../../static/add1.png', //加号
+				date:'',//选择送达日期
+				end:'',//选择送达日期的结束时间
+				goodsId:"",
+				cartIds:"",
+				windowflag:false
+			};
+		},
+		onLoad(option) {
+			this.nowDate();
+			let goodId = option.goodId;
+			this.goodsId=goodId;
+			let number = option.number;
+			let numbers = option.numbers;
+			let cartIds = option.cartIds;
+			this.cartIds=cartIds;
+			let comId = option.comId;
+			this.comId=comId;
+			this.loadData(goodId,number,cartIds,numbers);
+			this.windowshow(true);
+		},
+		computed: {
+		   startDate() {
+			return this.getDate('start');
+		   },
+		   endDate() {
+			return this.getDate('end');
+		   }
+		},
+		
+		methods: {
+			loadData(goodId,number,cartIds,numbers){
+				var that = this;
+				if(goodId && goodId!=null && goodId !="" && number!=null && number !="" ){
+					that.$http({ //调用接口
+						method: 'POST',
+						params:{
+							goodId:goodId,
+							number:number,
+							comId:that.comId
+						},
+						url: this.global.target + "/wx/cart/recomandcheckoutinfo" //this指data
+					}).then(function(response) { //接口返回数据
+						console.log(response)
+						var result = response.data;
+						if(result.errno == 0){
+							let goodsList = result.data.checkedGoodsList;
+							goodsList.forEach(item=>{
+								that.$set(item.storeList[0], 'seleted', true);
+								item.time=that.time;
+								item.date=that.date;
+							})
+							that.goodsList=result.data.checkedGoodsList;
+							that.goodsTotalPrice=result.data.goodsTotalPrice;
+						}else{
+							this.$api.msg(result.errmsg)
+						}
+					}, function(error) {})
+				}else if(cartIds && cartIds!=null && cartIds !="" && numbers!=null && numbers !="" ){
+					that.$http({ //调用接口
+						method: 'POST',
+						params:{
+							cartIds:cartIds,
+							numbers:numbers,
+							comId:that.comId
+						},
+						url: this.global.target + "/wx/cart/recomandcheckoutinfo" //this指data
+					}).then(function(response) { //接口返回数据
+						console.log(response)
+						var result = response.data;
+						if(result.errno == 0){
+							let goodsList = result.data.checkedGoodsList;
+							goodsList.forEach(item=>{
+								that.$set(item.storeList[0], 'seleted', true);
+								item.time=that.time;
+								item.date=that.date;
+							})
+							that.goodsList=result.data.checkedGoodsList;
+							that.goodsTotalPrice=result.data.goodsTotalPrice;
+						}else{
+							
+						}
+					}, function(error) {})
+				}
+			},
+			recommandOrder(){//下单预约
+				var goodsId=0;
+				var number=0;
+				var time="";
+				var storeId=0;
+				var cartIds="";
+				var times="";
+				var storeIds="";
+				if(this.goodsId && this.goodsId!=null && this.goodsId !="" ){
+					for(var i=0;i<this.goodsList.length;i++){
+						let obj = this.goodsList[i];
+						let cart = obj.cart;
+						goodsId=cart.productId;
+						number=cart.number;
+						// time=obj.date +" "+obj.time;
+						time=this.date +" "+this.time;
+						for(var j =0;j< obj.storeList.length;j++){
+							console.log(j)
+							console.log(obj.storeList[j])
+							let store = obj.storeList[j];
+							if(store.seleted==true){
+								storeId=store.id;
+							}
+						}
+					}
+				}else if(this.cartIds && this.cartIds!=null && this.cartIds !="" ){
+					for(var i=0;i<this.goodsList.length;i++){
+						let obj = this.goodsList[i];
+						console.log(obj)
+						let cart = obj.cart;
+						cartIds+=cart.id+",";
+						times+=obj.date +" "+obj.time+",";
+						for(var j =0;j< obj.storeList.length;j++){
+							console.log(j)
+							console.log(obj.storeList[j])
+							let store = obj.storeList[j];
+							if(store.seleted==true){
+								storeIds+=store.id+",";
+							}
+						}
+					}
+				}
+				
+			
+				var that=this;
+				that.$http({ //调用接口
+						method: 'POST',
+						params:{
+							goodId:goodsId,
+							number:number,
+							time:time,
+							storeId:storeId,
+							storeIds:storeIds,
+							cartIds:cartIds,
+							times:times,
+							comId:that.comId
+						},
+						url: this.global.target + "/wx/order/submitcommand" //this指data
+				}).then(function(response) { //接口返回数据
+						console.log(response)
+						var result = response.data;
+						if(result.errno == 0){
+							uni.navigateTo({
+								url: `/pages/submitam/order?state=0`
+							})
+						}else{
+							that.$api.msg(result.errmsg)
+						}
+					}, function(error) {})
+				
+				
+			},
+			nowDate(){
+				var date=new Date();
+				var month=(date.getMonth()+1)>9?(date.getMonth()+1):'0'+(date.getMonth()+1);
+				var day=date.getDate()>9?date.getDate():('0'+date.getDate())
+				var endmonth=(date.getMonth()+2)>9?(date.getMonth()+2):('0'+(date.getMonth()+2));
+				this.date=date.getFullYear()+'-'+month+'-'+day;
+				this.end=date.getFullYear()+'-'+endmonth+'-'+day;
+				console.log(this.date,this.end)
+			},
+			disnum() { //减少件数
+				var yuyue_num = this.yuyue_num - 1;
+				if (yuyue_num > 0) {
+					this.yuyue_num = yuyue_num;
+				}
+			},
+			addnum() { //增加件数
+				var yuyue_num = parseInt(this.yuyue_num) + 1;
+				console.log(yuyue_num)
+				this.yuyue_num = yuyue_num;
+			},
+			checkaddress(numb,index) { //选择地址
+				let storeList=this.goodsList[numb].storeList;
+				storeList.forEach(item=>{
+					item.seleted=false;
+				})
+				this.goodsList[numb].storeList[index].seleted=true;
+			},
+			bindDateChange(e){
+				console.log(e)
+				this.date=e.detail.value;
+			},
+			bindTimeChange(e){
+				console.log(e)
+				this.time=e.detail.value;
+			},
+			//弹窗 
+			windowshow(e){
+				this.windowflag=e
+			},
+			getDate(type) {
+			const date = new Date();
+			let year = date.getFullYear();
+			let month = date.getMonth() + 1;
+			let day = date.getDate();
+
+			if (type === 'start') {
+			 year = year;
+			} else if (type === 'end') {
+			 year = year + 1;
+			}
+			console.log(month)
+			month = month > 9 ? month : '0' + month;;
+			day = day > 9 ? day : '0' + day;
+			return `${year}-${month}-${day}`;
+
+		   }
+		}
+	}
+</script>
+
+<style lang="scss">
+	page{
+		background: $page-color-base;
+	}
+	.sam_info,
+	.info_price,
+	.info_price .add_dis,
+	.mendian,
+	.sam_mendian_time .time,
+	.tmf_address,
+	.tmf_list .dingdan_li,
+	.shou_list .shou_li,
+	.last_price,
+	.mendian_right .mendian_li{
+		display: flex;
+		display: -webkit-flex;
+		box-sizing: border-box;
+		background: #fff;
+	}
+
+	.submitam {
+		background: #f8f8f8;
+	}
+	.sub-shop{
+		display: flex;
+		background: #fff;
+		align-items: center;
+		padding: 27upx 0 0 27upx;
+		font-size: 29upx;
+		image{
+			width: 38upx;
+			height: 38upx;
+			margin: 0 20upx 0 0;
+		}
+	}
+
+	.sam_info {
+		padding: 30upx 27upx 0;
+	}
+
+	.info_left {
+		width: 246upx;
+		height: 234upx;
+		flex-shrink: 0;
+		margin: 0 49upx 0 53upx;
+	}
+
+	.info_left .goodimg {
+		width: 100%;
+		height: 100%;
+	}
+
+	.info_right {
+		flex: 1;
+		position: relative;
+	}
+
+	.info_right .title {
+		font-size: 24upx;
+		.red{
+			padding: 0 14upx;
+			background: #ff0000;
+			font-size: 19upx;
+			color: #fff;
+			border-radius: 14upx;
+			margin: 0 10upx 0 0;
+		}
+	}
+
+	.info_other {
+		font-size: 20upx;
+		color: #909090;
+		line-height: 30upx;
+	}
+
+	.info_other .info_li {
+		padding-left: 20upx;
+		box-sizing: border-box;
+		line-height: 34upx;
+	}
+
+	.info_price {
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+		justify-content: space-between;
+	}
+
+	.info_price .num {
+		font-size: 29upx;
+		color: #ff0000;
+		font-weight: bold;
+		&:before{
+			content:'￥';
+			font-size: 24upx;
+		}
+	}
+
+	.info_price .add_dis {
+		position: relative;
+		left: 0;
+		transform: scale(0.7);
+		background: #f5f5f5;
+	}
+
+	.info_price .add_dis .add,
+	.info_price .add_dis .dis {
+		width: 65upx;
+		height: 56upx;
+		flex-shrink: 0;
+		-webkit-flex-shrink: 0;
+	}
+
+	.info_price .add_dis .opimg {
+		width: 40upx;
+		height: 40upx;
+		margin: 10upx auto;
+	}
+
+	.info_price .add_dis input {
+		width: 100upx;
+		height: 56upx;
+	}
+
+	// <!-- 预约信息 end-->
+	// <!-- 取货门店 +时间-->
+	.sam_mendian_time {
+		padding:29upx 26upx 28upx;
+		box-sizing: border-box;
+		background: #fff;
+	}
+
+	.mendian {
+		border-bottom: 1px solid #f8f8f8;
+	}
+
+	.mendian .mendian_left,
+	.time .time_left,
+	.tmf_address .tml_left {
+		font-size: 24upx;
+		flex-shrink: 0;
+		padding: 8upx 0 0;
+	}
+
+	.mendian .mendian_right,
+	.time .time_right {
+		font-size: 24upx;
+		flex: 1;
+		-webkit-flex: 1;
+	}
+.time .time_right .p_data,
+.time .time_right .p_time{
+	float: right;
+	margin: 0 0 0 20upx;
+}
+	.mendian_right .mendian_li {
+		height: 63upx;
+		justify-content: space-between;
+		
+	}
+
+.mendian_right .mendian_li .address{
+	display: block;
+	padding: 8upx 0 0;
+}
+	.mendian_right .mendian_li .checkbox,
+	.mendian_right .mendian_li .checkbox .box {
+		float: right;
+		transform: scale(0.85);
+		margin: 0;
+	}
+
+	.time .time_right {
+		text-align: right;
+		color: #FF0000;
+		font-size: 24upx;
+		margin: 20upx 0 0;
+	}
+	.st-time{
+		.st-times{
+			color: #B4B4B4;
+			font-size: 20upx;
+			margin: 8upx 0 0;
+		}
+	}
+	// <!-- 取货门店 +时间 end-->
+	// <!-- 取货时间规则+门店信息+发票*** -->
+	.sam_tmf ,
+	.shou_list{
+		margin: 27upx 0 0;
+		background: #fff;
+		padding: 20upx 27upx;
+		box-sizing: border-box;
+		.red{
+			color: #ff0000;
+		}
+	}
+
+	.sam_tmf .time {
+		font-size: 30upx;
+		color: #666;
+		height: 100upx;
+		line-height: 100upx;
+		background: #f8f8f8;
+		text-align: center;
+		text-decoration: underline;
+	}
+
+	.tmf_mendian {
+		margin: 10upx 0 0 0;
+		font-size: 32upx;
+		line-height: 60upx;
+	}
+
+	.tmf_address .tml_left {
+		margin: 0;
+	}
+
+	.tmf_list .dingdan_li,
+	.shou_list .shou_li {
+		justify-content: space-between;
+		-webkit-justify-content: space-between;
+		font-size: 24upx;
+		padding: 0;
+		line-height: 50upx;
+	}
+	.tmf_list .dingdan_li{
+		.jifens{
+			margin: 0 0 0 20upx;
+			font-weight: bold;
+		}
+	
+		switch{
+			transform: scale(.7);
+		}
+	}
+
+	.dingd_left .jifen {
+		margin: 0 0 0 10upx;
+	}
+
+	.dingd_left .jifen text {
+		color: #fa436a;
+	}
+
+
+	.st-address{
+		margin: 24upx 0 0;
+		image{
+			width: 20upx;
+			height: 24upx;
+			margin: 0 10upx 0 0;
+		}
+		.time_right{
+			display: flex;
+			align-items: center;
+			color: #000000;
+			margin: 0;
+			justify-content:flex-end ;
+		}
+	}
+	.window{
+		margin: 50upx auto 150upx auto;
+		font-size: 26upx;
+		color: #666;
+		text-align: center;
+		text-decoration: underline;
+	}
+	// <!-- 取货时间规则+门店信息+发票*** end-->
+	// <!-- 确认预约 -->
+	.confirm {
+		background: #fff;
+		position: fixed;
+		z-index: 999;
+		height: 98upx;
+		bottom: 0;
+		width: 100vw;
+		box-shadow:0px 0px 9px 0px rgba(47,47,47,0.36);
+		display: flex;
+	}
+
+	.last_price {
+		color: #ff0000;
+		flex-direction: column;
+		flex: 1;
+		padding: 4upx 0 0 27upx;
+		.price_right{
+			font-size: 40upx;
+			font-weight: bold;
+			&:before{
+				content: '￥';
+				font-size: 27upx;
+			}
+		}
+		.con_can{
+			font-size: 19upx;
+		}
+	}
+
+	.confirm_btn {
+		width: 280upx;
+		background:linear-gradient(239deg,rgba(242,81,33,1),rgba(233,58,39,1));
+		text-align: center;
+		font-size: 29upx;
+		color: #fff;
+		line-height: 98upx;
+		flex-shrink: 0;
+	}
+	.windows{
+		width: 100vw;
+		height: 100vh;
+		position: fixed;
+		z-index: 999;
+		background: rgba(0,0,0,.8);
+		top: 0;
+		margin: 0;
+		.window-content{
+			background: #fff;
+			padding: 50upx 40upx;
+			box-sizing: border-box;
+			position: absolute;
+			width: 86%;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%,-50%);
+			border-radius: 5upx;
+			.title{
+				font-size: 29upx;
+				line-height: 37upx;
+				text-align: center;
+			}
+			.text{
+				font-size: 21upx;
+				line-height: 35upx;
+				margin: 27upx 0 0;
+				.red{
+					color: #ff0000;
+				}
+			}
+		}
+	}
+</style>

@@ -1,0 +1,484 @@
+<template>
+	<view class="submitam">
+		<!-- 预约信息 -->
+		<view class="sam_info">
+			<view class="info_left">
+				<image src="../../static/temp/cate10.jpg" class="goodimg" mode=""></image>
+			</view>
+			<view class="info_right">
+				<view class="title">
+					恒源祥2019春季长袖白色新款春装
+				</view>
+				<view class="info_other">
+					<view class="info_li">
+						<text>颜色</text>：<text>白色</text>
+					</view>
+					<view class="info_li">
+						<text>尺码</text>：<text>S</text>
+					</view>
+				</view>
+				<view class="info_price">
+					<view class="price">
+						<text>￥:</text><text class="num">150.00</text>
+					</view>
+					<view class="add_dis">
+						<view class="dis" @click="disnum">
+							<image :src="yuyue_num<2?(disimg+'2.png'):(disimg+'1.png')" mode="" class="opimg"></image>
+						</view>
+						<input type="number" :value="yuyue_num" v-model="yuyue_num" />
+						<view class="add" @click="addnum">
+							<image :src="addimg" mode="" class="opimg"></image>
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+		<!-- 预约信息 end-->
+		<!-- 取货门店 +时间-->
+		<view class="sam_mendian_time">
+			<view class="mendian">
+				<view class="mendian_left">
+					取货门店：
+				</view>
+				<view class="mendian_right">
+					<view class="mendian_li" v-for="(item,index) of mendianlist" :key="index">
+						<text class="address">{{item.address}}</text>
+						<checkbox-group  @change="checkaddress(index)">
+							<label class="checkbox">
+								<checkbox class="box" :value="item.address" :checked="checkmendian[index]" />
+							</label>
+						</checkbox-group>
+					</view>
+				</view>
+			</view>
+			<view class="time">
+				<view class="time_left">
+					取货时间：
+				</view>
+				<view class="time_right">
+					<picker mode="time" class="p_time" :value="time" start="09:01" end="21:01" @change="bindTimeChange">
+						<view class="uni-input">{{time}}></view>
+					</picker>
+					<picker mode="date" class="p_data" :value="date" :start="date" :end="end" @change="bindDateChange">
+						<view class="uni-input">{{date}}</view>
+					</picker>
+				</view>
+			</view>
+		</view>
+		<!-- 取货门店 +时间 end-->
+		<!-- 取货时间规则+门店信息+发票*** -->
+		<view class="sam_tmf">
+			<view class="time">
+				取货时间的规则详情
+			</view>
+			<view class="tmf_mendian">
+				<view class="tmf_address">
+					<view class="tml_left">
+						门店详细地址：
+					</view>
+					<view class="tmf_right">
+						******门店详细地址：******门店详细地址：******门店详细地址：
+					</view>
+				</view>
+				<view class="tmf_address">
+					<view class="tml_left">
+						门店联系电话
+					</view>
+					<view class="tmf_right">
+						******
+					</view>
+				</view>
+			</view>
+			<view class="tmf_list">
+				<view class="dingdan_li">
+					<view class="dingd_left">
+						发票
+					</view>
+					<view class="dingd_right">
+						预约商品线下开具
+					</view>
+				</view>
+				<view class="dingdan_li">
+					<view class="dingd_left">
+						优惠券
+					</view>
+					<view class="dingd_right">
+						1张可用（门店出示）
+					</view>
+				</view>
+				<view class="dingdan_li">
+					<view class="dingd_left">
+						<text>积分</text>
+						<text class="jifen">共<text class="">78</text>,满100可用</text>
+					</view>
+					<view class="dingd_right">
+						可抵用0.00元
+					</view>
+				</view>
+			</view>
+			<view class="shou_list">
+				<view class="shou_li">
+					<view class="shou_left">
+						商品售价
+					</view>
+					<view class="shou_right">
+						<text>￥</text>188
+					</view>
+				</view>
+				<view class="shou_li">
+					<view class="shou_left">
+						促销活动
+					</view>
+					<view class="shou_right color_red">
+						<text>-￥</text>4
+					</view>
+				</view>
+			</view>
+		</view>
+		<!-- 取货时间规则+门店信息+发票*** end-->
+		<!-- 确认预约 -->
+		<view class="confirm">
+			<view class="last_price">
+				<view class="price_left">
+					参考价格（以门店实际售价为准）
+				</view>
+				<view class="price_right">
+					￥166.00
+				</view>
+			</view>
+			<view class="confirm_btn">
+				确认预约
+			</view>
+		</view>
+		<!-- 确认预约 end-->
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				time: '12:00', //取件时间
+				yuyue_num: 1, //预约的件数
+				disimg: '../../static/dis', //减号
+				addimg: '../../static/add1.png', //加号
+				mendianlist: [{
+						id: 1,
+						address: 'A首都机场首都机场首都机场首都机场首都机场首都机场T3航站楼***'
+					},
+					{
+						id: 2,
+						address: 'A首都机场T3航站楼***'
+					},
+					{
+						id: 3,
+						address: 'A首都机场T3航站楼***'
+					}
+				], //门店列表
+				checkmendian: {
+					0: true,
+					1: false,
+					2: false
+				}, //选中哪个门店
+				date:'',//选择送达日期
+				end:'',//选择送达日期的结束时间
+			};
+		},
+		onLoad() {
+			this.nowDate();
+		},
+		methods: {
+			nowDate(){
+				var date=new Date();
+				var month=(date.getMonth()+1)>9?(date.getMonth()+1):'0'+(date.getMonth()+1);
+				var day=date.getDate()>9?date.getDate():('0'+date.getDate())
+				var endmonth=(date.getMonth()+2)>9?(date.getMonth()+2):('0'+(date.getMonth()+2));
+				this.date=date.getFullYear()+'-'+month+'-'+day;
+				this.end=date.getFullYear()+'-'+endmonth+'-'+day;
+				console.log(this.date,this.end)
+			},
+			disnum() { //减少件数
+				var yuyue_num = this.yuyue_num - 1;
+				if (yuyue_num > 0) {
+					this.yuyue_num = yuyue_num;
+				}
+			},
+			addnum() { //增加件数
+				var yuyue_num = parseInt(this.yuyue_num) + 1;
+				console.log(yuyue_num)
+				this.yuyue_num = yuyue_num;
+			},
+			checkaddress(index) { //选择地址
+				for(var i in this.checkmendian){
+					if(i==index){
+						this.checkmendian[i]=true;
+					}else{
+						this.checkmendian[i]=false;
+					}
+				}
+			},
+			bindDateChange(e){
+				console.log(e)
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	.sam_info,
+	.info_price,
+	.info_price .add_dis,
+	.mendian,
+	.sam_mendian_time .time,
+	.tmf_address,
+	.tmf_list .dingdan_li,
+	.shou_list .shou_li,
+	.last_price,
+	.mendian_right .mendian_li{
+		display: flex;
+		display: -webkit-flex;
+		padding: 20upx 20upx;
+		box-sizing: border-box;
+		background: #fff;
+	}
+
+	.submitam {
+		background: #f8f8f8;
+	}
+
+	.sam_info {
+		padding: 30upx 20upx 0;
+	}
+
+	.info_left {
+		width: 250upx;
+		height: 250upx;
+		flex-shrink: 0;
+		-webkit-flex-shrink: 0;
+	}
+
+	.info_left .goodimg {
+		width: 95%;
+		height: 100%;
+	}
+
+	.info_right {
+		flex: 1;
+		-webkit-flex: 1;
+	}
+
+	.info_right .title {
+		font-size: 36upx;
+		line-height: 50upx;
+		margin: 10upx 0;
+	}
+
+	.info_other {
+		font-size: 28upx;
+		color: #333;
+	}
+
+	.info_other .info_li {
+		padding-left: 20upx;
+		box-sizing: border-box;
+		line-height: 34upx;
+	}
+
+	.info_price {
+		font-size: 30upx;
+		color: #666;
+		justify-content: space-between;
+		-webkit-justify-content: space-between;
+	}
+
+	.info_price .num {
+		font-size: 36upx;
+		color: #fa436a;
+		font-weight: bold;
+	}
+
+	.info_price .add_dis {
+		width: 230upx;
+		height: 60upx;
+		border: 1upx solid #f8f8f8;
+		border-radius: 8upx;
+		line-height: 56upx;
+		padding: 0;
+		text-align: center;
+	}
+
+	.info_price .add_dis .add,
+	.info_price .add_dis .dis {
+		width: 65upx;
+		height: 56upx;
+		flex-shrink: 0;
+		-webkit-flex-shrink: 0;
+	}
+
+	.info_price .add_dis .opimg {
+		width: 40upx;
+		height: 40upx;
+		margin: 10upx auto;
+	}
+
+	.info_price .add_dis input {
+		width: 100upx;
+		height: 56upx;
+	}
+
+	// <!-- 预约信息 end-->
+	// <!-- 取货门店 +时间-->
+	.sam_mendian_time {
+		padding: 0 0 30upx 0;
+		box-sizing: border-box;
+		background: #fff;
+	}
+
+	.mendian {
+		margin: 20upx 0 0;
+		border-bottom: 1px solid #f8f8f8;
+	}
+
+	.mendian .mendian_left,
+	.time .time_left,
+	.tmf_address .tml_left {
+		font-size: 34upx;
+		font-weight: bold;
+		margin: 20upx 0 0;
+		color: #666;
+		width: 250upx;
+		flex-shrink: 0;
+		-webkit-flex-shrink: 0;
+	}
+.mendian .mendian_left{
+	width: 170upx;
+}
+	.mendian .mendian_right,
+	.time .time_right {
+		font-size: 28upx;
+		color: #333;
+		flex: 1;
+		-webkit-flex: 1;
+	}
+.time .time_right .p_data,
+.time .time_right .p_time{
+	float: right;
+	margin: 0 0 0 20upx;
+}
+	.mendian_right .mendian_li {
+		// height: 50upx;
+		justify-content: space-between;
+		-webkit-justify-content: space-between;
+	}
+
+.mendian_right .mendian_li .address{
+	display: block;
+		line-height: 60upx;
+}
+	.mendian_right .mendian_li .checkbox,
+	.mendian_right .mendian_li .checkbox .box {
+		float: right;
+		width: 50upx;
+		height: 50upx;
+		margin: 0;
+	}
+
+	.time .time_right {
+		text-align: right;
+		color: #fa436a;
+		font-size: 32upx;
+		margin: 20upx 0 0;
+	}
+
+	// <!-- 取货门店 +时间 end-->
+	// <!-- 取货时间规则+门店信息+发票*** -->
+	.sam_tmf {
+		margin: 20upx 0 0;
+		background: #fff;
+		padding: 20upx;
+		box-sizing: border-box;
+	}
+
+	.sam_tmf .time {
+		font-size: 30upx;
+		color: #666;
+		height: 100upx;
+		line-height: 100upx;
+		background: #f8f8f8;
+		text-align: center;
+		text-decoration: underline;
+	}
+
+	.tmf_mendian {
+		margin: 10upx 0 0 0;
+		font-size: 32upx;
+		line-height: 60upx;
+	}
+
+	.tmf_address .tml_left {
+		margin: 0;
+	}
+
+	.tmf_list {
+		padding: 20upx 0;
+		margin: 0 0 30upx 0;
+		border-bottom: 1px solid #f8f8f8;
+	}
+
+	.tmf_list .dingdan_li,
+	.shou_list .shou_li {
+		justify-content: space-between;
+		-webkit-justify-content: space-between;
+		font-size: 30upx;
+		color: #666;
+		padding: 0;
+		line-height: 60upx;
+	}
+
+	.shou_list .shou_li {
+		padding: 10upx 20upx;
+		line-height: 40upx;
+		background: #f8f8f8;
+	}
+
+	.dingd_left .jifen {
+		margin: 0 0 0 10upx;
+	}
+
+	.dingd_left .jifen text {
+		color: #fa436a;
+	}
+
+	.color_red {
+		color: #fa436a;
+	}
+
+	// <!-- 取货时间规则+门店信息+发票*** end-->
+	// <!-- 确认预约 -->
+	.confirm {
+		background: #fff;
+		margin: 20upx 0 0;
+		padding-bottom: 40upx;
+	}
+
+	.last_price {
+		color: #fa436a;
+		font-size: 32upx;
+		justify-content: space-between;
+		-webkit-justify-content: space-between;
+	}
+
+	.confirm_btn {
+		width: 300upx;
+		height: 76upx;
+		border-radius: 200upx;
+		background: #fa436a;
+		margin: 20upx auto 40upx;
+		box-shadow: 2upx 4upx 10upx rgba(219, 63, 96, 0.4);
+		background: linear-gradient(to right, #ffac30, #fa436a, #f56c6c);
+		text-align: center;
+		font-size: 32upx;
+		color: #fff;
+		line-height: 76upx;
+	}
+</style>

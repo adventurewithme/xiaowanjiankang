@@ -1,0 +1,70 @@
+<template>
+	<view class="loading">
+		<view class="loading_bg">
+			
+		</view>
+		<view class="loading_content">
+			<view class="tiaozhuan">
+				<text @click="navTo('/pages/category/category')">在线购买</text>
+				<text class="shu">|</text>
+				<text  @click="switchTo('/pages/appointment/appointment')">在线预约</text>
+			</view>
+			<view class="toindex" @click="switchTo('/pages/index/index')">
+				立即体验
+			</view>
+		</view>
+	</view>
+	
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				
+			};
+		},
+		methods:{
+			navTo(url){
+				uni.navigateTo({  
+					url
+				})  
+			},
+			switchTo(url){
+				uni.switchTab({
+					url
+				})
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+.loading_bg,
+.loading_content{
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	z-index: 99;
+}
+.loading_content{
+	z-index: 999;
+	text-align: center;
+}
+.loading_content .tiaozhuan{
+	margin: 40vh 0 0;
+	font-size: 32upx;
+}
+.loading_content .tiaozhuan .shu{
+	margin: 0 20upx;
+}
+.loading_content .toindex{
+	margin: 30vh auto 0;
+	width: 300upx;
+	height: 80upx;
+	line-height: 80upx;
+	border-radius: 80upx;
+	font-size: 40upx;
+	background: rgba(0,0,0,.7);
+}
+</style>

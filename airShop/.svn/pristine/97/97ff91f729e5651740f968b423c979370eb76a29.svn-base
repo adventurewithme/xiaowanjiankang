@@ -1,0 +1,5 @@
+// var target = "http://192.168.1.104:8082/";
+var target = "http://localhost:8090/";
+export default{
+	target
+}

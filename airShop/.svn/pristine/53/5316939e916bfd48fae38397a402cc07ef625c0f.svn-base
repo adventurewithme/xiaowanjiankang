@@ -1,0 +1,5 @@
+// var target = "http://j25w093792.wicp.vip/";
+var target = "http://127.0.0.1:8082/";
+export default{
+	target
+}

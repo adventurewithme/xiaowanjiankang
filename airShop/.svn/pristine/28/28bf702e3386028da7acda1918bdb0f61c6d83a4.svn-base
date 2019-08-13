@@ -1,0 +1,7 @@
+// var target = "http://j25w093792.wicp.vip/";
+var target = "http://www.echitch.com/";
+// var target = "http://127.0.0.1:8091/";
+ // var target = "http://www.meihaobar.com:8090/";
+export default{
+	target
+}

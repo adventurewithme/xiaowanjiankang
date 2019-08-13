@@ -1,0 +1,193 @@
+<template>
+	<view class="loading">
+		<view class="loading_bg">
+			<!-- <image :src="item" mode="" v-for="(item,index) in imglist" :key="index" :class="'active'+index" ></image> -->
+			<!-- <image :src="imglist[2].img" :class="'active'+2"></image> -->
+			<image :src="imglist" style='width:100vw;height:100vh'></image>
+			<!-- <image :src="imglist[currentimg].img" :class="'active'+currentimg"></image> -->
+		</view>
+		<view class="loading_content">
+			<view class="tiaozhuan">
+				<text style="loading_shu;" @click="switchTo('/pages/category/category')">特产</text>
+				<text class="shu">|</text>
+				<text style="loading_shu;" @click="switchTo('/pages/appointment/appointment')">精品</text>
+			</view>
+			<view class="loading_shu">
+				让您的旅途更丰富更舒心！
+			</view>
+			<view class="toindex" style="color: white;" @click="switchTo('/pages/index/index')">
+				立即体验
+			</view>
+			<view class="explain">
+				您已同意掌上商城<text class="blue">用户协议、隐私政策</text>，并授权使用您的掌上商城账号信息（如昵称、头像、 收货地址）以便进行统一管理
+			</view>
+		</view>
+	</view>
+
+</template>
+
+<script>
+	import {
+		mapMutations
+	} from 'vuex'
+	export default {
+		data() {
+			return {
+				// imglist: [{
+				// 	img: '../../static/temp/airPic1.jpg'
+				// }, {
+				// 	img: '../../static/temp/airPic2.jpg'
+				// }, {
+				// 	img: '../../static/temp/airPic1.jpg'
+				// }, {
+				// 	img: '../../static/temp/airPic2.jpg'
+				// }],
+				imglist:'../../static/newimg/loadingbg.jpg',
+				// currentimg: 0,
+				// img: ''
+			};
+		},
+		created() {
+			// this.img = this.imglist[1].img
+			// this.changeimg();
+		},
+		methods: {
+			changeimg() {
+				var that = this;
+				var i = 0;
+				setInterval(function() {
+					if (i < 2) {
+						i += 1;
+					} else {
+						i = 0;
+
+					}
+					that.currentimg = i
+					console.log('1', that.imglist[1].img)
+					// this.img=this.imglist[1].img
+				}, 2000)
+			},
+			navTo(url) {
+				uni.navigateTo({
+					url
+				})
+			},
+			switchTo(url) {
+				uni.switchTab({
+					url
+				})
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	.loading_bg,
+	.loading_content {
+		width: 100vw;
+		height: 100vh;
+		position: fixed;
+		z-index: 99;
+	}
+
+	.active0 {
+		width: 120%;
+		height: 100%;
+		animation: 1500ms img1;
+		animation-fill-mode: forwards;
+	}
+
+	@keyframes img1 {
+		from {
+			margin: 0;
+		}
+
+		to {
+			margin: 0 0 0 -20%;
+			display: none;
+		}
+	}
+
+	.active1 {
+		width: 100%;
+		height: 100%;
+		animation: 1500ms img2;
+		animation-fill-mode: forwards;
+		// transform: scale(1.2,1.2) 1500ms;
+	}
+
+	@keyframes img2 {
+		from {
+			transform: scale(1.0, 1.0);
+		}
+
+		to {
+			transform: scale(1.2, 1.2)
+		}
+	}
+
+	.active2 {
+		width: 200%;
+		height: 100%;
+		animation: 1500ms img3;
+		animation-fill-mode: forwards;
+	}
+
+	@keyframes img3 {
+		from {
+			margin: 0 0 0 -20%;
+		}
+
+		to {
+			margin: 0 0 0 0;
+		}
+	}
+
+	.loading_content {
+		z-index: 999;
+		text-align: center;
+		color: #fff;
+		.explain{
+			color: #B4B4B4;
+			font-size: 17upx;
+			padding: 0 27upx;
+			box-sizing: border-box;
+			position: absolute;
+			bottom: 65upx;
+			text-align: left;
+			line-height: 30upx;
+			.blue{
+				color: #3ACEBF;
+			}
+		}
+		.loading_shu{
+			font-size: 33upx;
+			
+			margin: 31vh 0 0;
+		}
+	}
+
+	.loading_content .tiaozhuan {
+		margin:35vh 0 0;
+		font-size: 32upx;
+		font-weight: lighter;
+	}
+
+	.loading_content .tiaozhuan .shu {
+		margin: 0 20upx;
+		color: #fff;
+	}
+
+	.loading_content .toindex {
+		margin: 4vh auto 0;
+		padding: 25upx 0 0;
+		box-sizing: border-box;
+		width: 431upx;
+		height: 105upx;
+		// line-height: 90upx;
+		// border-radius: 80upx;
+		font-size: 33upx;
+		background: url('../../static/newimg/loadingbtn.png');
+		background-size: 100% 100%;
+	}
+</style>

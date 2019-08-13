@@ -1,0 +1,432 @@
+<template>
+	<view class="appointmentdiv">
+		<view class="appointment">
+			<!-- 首都机场/大兴机场 -->
+			<view class="am_list">
+				<view class="am_li" v-for="(item, index) in comList" :key="index" @click="changeAirport(item.id)">
+
+					<text class="am_name" :class="comId==item.id?'am_active':''">{{item.name}}</text>
+
+					<!-- {{item.name}} -->
+
+					<!-- <view v-bind:class="{'selectcompanyitem':comId==item.id}">
+					{{item.name}} -->
+
+				</view>
+			</view>
+		</view>
+		<!-- 三个icon end-->
+		<!-- 筛选条件 -->
+		<scroll-view class="conditions " scroll-with-animation scroll-x="true">
+			<view class="conditions_li " v-for="(item,index) in conditions" :key="index" :class="brandId==item.id?'active':''"
+			 @click="changecondition(item.id)">
+				{{item.name}}
+			</view>
+		</scroll-view>
+		<!-- 筛选条件 end-->
+		<!-- 商品列表 -->
+		<view class="guess-section">
+			<view class="guess-left">
+				<block  v-for="(item, index) in goodslist" :key="index">
+					<view  class="guess-item" @click="navToDetailPage(item)" v-if="index%2==0">
+						<view class="image-wrapper">
+							<image :src="item.picUrl" mode="aspectFill"></image>
+						</view>
+						<view class="guess-s-bottom">
+							<view class="title clamp">{{item.name}}</view>
+						</view>
+						<text class="price">￥{{item.retailPrice}}</text>
+						<view class="guess-shop">
+							<view class="name">{{item.storeName}}</view>
+						</view>
+					</view>
+				</block>
+			</view>
+			<view class="guess-right">
+				<block v-for="(item, index) in goodslist" :key="index">
+					<view  class="guess-item" @click="navToDetailPage(item)" v-if="index%2==1">
+						<view class="image-wrapper">
+							<image :src="item.picUrl" mode="aspectFill"></image>
+						</view>
+						<view class="guess-s-bottom">
+							<view class="title clamp">{{item.name}}</view>
+						</view>
+						<text class="price">￥{{item.retailPrice}}</text>
+						<view class="guess-shop">
+							<view class="name">{{item.storeName}}</view>
+						</view>
+					</view>
+				</block>
+			</view>
+			<!-- <view v-for="(item, index) in goodslist" :key="index" class="guess-item" @click="navToDetailPage(item)">
+				<view class="image-wrapper">
+					<image :src="item.picUrl" mode="aspectFill"></image>
+				</view>
+				<view class="guess-s-bottom">
+					<view class="title clamp">{{item.name}}</view>
+				</view>
+				<text class="price">￥{{item.retailPrice}}</text>
+				<view class="guess-shop">
+					<view class="name">{{item.storeName}}</view>
+				</view>
+			</view> -->
+		</view>
+		<!-- 商品列表 end-->
+	</view>
+	</view>
+
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				comList: [
+				// 	{
+				// 	id: 1,
+				// 	name: "大兴"
+				// }, {
+				// 	id: 2,
+				// 	name: "朝阳"
+				// }, {
+				// 	id: 3,
+				// 	name: "通州"
+				// },
+				],
+				goodslist: [], //商品列表
+				// goodslist: [
+				// 	
+				// ], //商品列表
+				conditions: [
+				// 	{ //筛选条件
+				// 	id: 1,
+				// 	name: '条件1'
+				// }, {
+				// 	id: 2,
+				// 	name: '条件2'
+				// },
+				],
+				brandId: undefined, //当前选中的筛选条件
+				comId: 2, //一级条件ID
+				page: 1,
+				size: 10,
+				loading: true,
+
+			};
+		},
+		onLoad() {
+			this.loadData();
+		},
+		methods: {
+			async loadData() {
+				var that = this;
+				that.$http({ //调用接口
+					method: 'GET',
+					url: this.global.target + "/wx/company/listyuyue" //this指data
+				}).then(function(response) { //接口返回数据
+					var list = response.data.data.list;
+					that.comList = list;
+					that.comId = list[0].id;
+				}, function(error) {})
+				this.loadBand();
+
+			},
+			async loadBand() {
+				var that = this;
+				that.$http({ //调用接口
+					method: 'GET',
+					params: {
+						comId: this.comId,
+					    page: 1,
+						limit: 100
+					},
+					url: this.global.target + "/wx/brand/list" //this指data
+				}).then(function(response) { //接口返回数据
+					that.conditions = response.data.data.list;
+				}, function(error) {})
+
+				this.loadGoods(1);
+			},
+			async loadGoods(type) {
+				var loading = this.loading;
+				if (loading == true) {
+					var that = this;
+					var page = that.page;
+					var size = that.size;
+					that.$http({ //调用接口
+						method: 'GET',
+						params: {
+							comId: this.comId,
+							brandId: this.brandId,
+							page: this.page,
+							limit: this.size
+						},
+						url: this.global.target + "/wx/tablelist/yuyue" //this指data
+					}).then(function(response) { //接口返回数据
+						console.log(response.data.data)
+						var total = response.data.data.total;
+						if (total == 0) {
+							that.$api.msg("无数据");
+						}
+						var num = page * size;
+						if (total <= num) {
+							that.loading = false;
+						}
+						var glist = response.data.data.list;
+						if (type) {
+							that.goodslist = glist;
+							document.documentElement.scrollTop = 0;
+						} else {
+							glist.forEach(item => {
+								that.goodslist.push(item);
+							})
+						}
+						that.page++;
+						uni.hideLoading()
+					}, function(error) {})
+				}
+
+			},
+
+			//详情页
+			navToDetailPage(item) {
+				//测试数据没有写id，用title代替
+				let id = item.id;
+				uni.navigateTo({
+					url: `/pages/product/product?id=${id}&from=appointment`
+				})
+			},
+			changecondition(id) { //切换筛选条件
+				this.brandId = id;
+				this.loading = true;
+				this.page = 1;
+				this.loadGoods(1);
+			},
+			changeAirport(id) {
+				this.comId = id;
+				this.loading = true;
+				this.page = 1;
+				this.loadBand(id);
+				this.loadGoods(1);
+			}
+
+		},
+		// 搜索栏
+		onNavigationBarSearchInputConfirmed(e) {
+			//console.log('输入内容为：',e.text)
+			//alert(e.text);
+			uni.navigateTo({
+				url: `/pages/category/search?keyword=` + e.text
+			});
+		}
+	}
+</script>
+
+<style lang="scss">
+	page {
+		background: #f9f9f9;
+	}
+
+	.am_list,
+	.conditions {
+		display: flex;
+		display: -webkit-flex;
+		width: 100vw;
+		height: 200upx;
+		padding: 0 20upx;
+		box-sizing: border-box;
+		background: #fff;
+	}
+
+	.am_list {
+		
+		border-radius: 20upx;
+		position: relative;
+		z-index: 2;
+		height: 97upx;
+	}
+
+	.am_list .am_li {
+		flex: 1;
+		text-align: center;
+		line-height: 97upx;
+		font-size: 32upx;
+
+	}
+
+	.am_list .am_name {
+		font-size: 32upx;
+		color: #2F2F2F;
+		display: inline-block;
+		background: #fff;
+		box-sizing: border-box;
+		position: relative;
+	}
+
+	.am_list .am_active::after{
+		position: absolute;
+		content:'';
+		width: 100%;
+		height: 5upx;
+		background: url('/static/newimg/active.png');
+		background-size: 100% 100%;
+		bottom: 0;
+		left: 0;
+	}
+
+	.selectcompanyitem {
+		background-color: antiquewhite
+	}
+
+	.conditions {
+		height: 140upx;
+		line-height: 96upx;
+		white-space: nowrap;
+		font-size: 32upx;
+		color: #666;
+		border-top: 1upx solid #f8f8f8;
+		margin: -40upx 0 0 0;
+		padding: 40upx 0 0 0;
+	}
+
+	.conditions .conditions_li {
+		display: inline-block;
+		padding: 0 40upx;
+		box-sizing: border-box;
+		flex-shrink: 0;
+	}
+
+	.conditions .active {
+		color: #FA436A;
+		border-bottom: 4upx solid #FA436A;
+	}
+
+	.guess-section {
+		display: flex;
+		flex-wrap: wrap;
+		padding: 0 27upx;
+		margin: 0 0 100upx 0;
+		.guess-left,.guess-right{
+			flex: 1;
+			display: flex;
+			flex-wrap: wrap;
+		}
+		.guess-left{
+			padding-right: 10upx;
+		}
+		.guess-right{
+			padding: 0 0 0 10upx;
+		}
+		.guess-item {
+			display: flex;
+			flex-direction: column;
+			background: #fff;
+			width: 100%;
+			padding-bottom: 40upx;
+			margin: 17upx 0 0;
+			box-shadow:0px 0px 9upx 0px rgba(47,47,47,0.1);
+			
+		}
+
+		.image-wrapper {
+			width: 100%;
+			height: 330upx;
+			border-radius: 3px;
+			overflow: hidden;
+			background: #fff;
+			image {
+				width: 100%;
+				height: 100%;
+				opacity: 1;
+			}
+		}
+
+		.title {
+			font-size: 32upx;
+			color: $font-color-dark;
+			margin: 14upx 0 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			display: -webkit-box;
+			-webkit-line-clamp: 2;
+			-webkit-box-orient:vertical;
+		}
+
+		.price {
+			font-size: $font-lg;
+			color: $uni-color-primary;
+			line-height: 1;
+			margin: 10upx 0 0;
+		}
+		.guess-first{
+			background: url('/static/newimg/jingxuan.png');
+			background-size: 100% 100%;
+			padding: 5upx 19upx 0;
+			.text{
+				color: #fff;
+				font-size: 27upx;
+				line-height: 55upx;
+			}
+			.image-wrapper{
+				width: 100%;
+				height: 289upx;
+				background: #2F2F2F;
+				margin: 0 0 9upx 0;
+			}
+			.text2{
+				color: #B4B4B4;
+				line-height: 30upx;
+				font-size: 17upx;
+				text-align: center;
+			}
+		}
+		.guess-s-bottom{
+			padding: 0 27upx 0 11upx;
+			.clamp{
+				white-space: normal;
+			}
+			.clamp text{
+				background: #FF0000;
+				color: #fff;
+				font-size: 19upx;
+				padding: 6upx 15upx;
+				border-radius:13upx;
+				line-height: 18upx;
+				display: inline-block;
+				margin: 0 10upx 0 13upx;
+			}
+		}
+		.guess-shop{
+			display: flex;
+			align-items: center;
+			width: 100%;
+			padding: 26upx 17upx 0 14upx;
+			box-sizing: border-box;
+			.shop_img{
+				width: 48upx;
+				height: 48upx;
+				margin: 0 13upx 0 0;
+			}
+			.chakan_img{
+				width: 19upx;
+				height: 16upx;
+				margin: 0 3upx 0 0;
+			}
+			.num{
+				font-size: 20upx;
+				color: #909090;
+				flex: 1;
+			}
+			.name{
+				text-overflow: ellipsis;
+				font-size: 20upx;
+				white-space: nowrap;
+				overflow: hidden;
+				margin: 0 27upx 0 0;
+			}
+			.shop_img,.chakan_img,.num{
+				flex-shrink: 0;
+			}
+		}
+	}
+</style>

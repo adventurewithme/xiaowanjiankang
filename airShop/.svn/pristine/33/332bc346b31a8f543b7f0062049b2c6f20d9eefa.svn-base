@@ -1,0 +1,273 @@
+<template>
+	<view class="">
+		<view class="appointment">
+			<!-- 首都机场/大兴机场 -->
+			<view class="am_list">
+				<view class="am_li" v-for="(item, index) in comList" :key="index" @click="changeAirport(item.id)">
+		
+					<view class="am_name" :class="comId==item.id?'am_active':''">{{item.name}}</view> 
+		
+					<!-- {{item.name}} -->
+		
+					<!-- <view v-bind:class="{'selectcompanyitem':comId==item.id}">
+					{{item.name}} -->
+		
+					</view>
+				</view>
+			</view>
+			<!-- 三个icon end-->
+			<!-- 筛选条件 -->
+			<scroll-view class="conditions " scroll-with-animation  scroll-x="true">
+				<view class="conditions_li " v-for="(item,index) in conditions" :key="index" :class="brandId==item.id?'active':''" @click="changecondition(item.id)">
+					{{item.name}}
+				</view>
+			</scroll-view>
+			<!-- 筛选条件 end-->
+			<!-- 商品列表 -->
+			<view class="guess-section">
+				<view v-for="(item, index) in goodslist" :key="index" class="guess-item" @click="navToDetailPage(item)">
+					<view class="image-wrapper">
+						<image :src="item.picUrl" mode="aspectFill"></image>
+					</view>
+					<text class="title clamp">{{item.name}}</text>
+					<text class="price">￥{{item.retailPrice}}</text>
+				</view>
+			</view>
+			<!-- 商品列表 end-->
+		</view>
+	</view>
+	
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				comList:[{id:1,name:"大兴"},{id:2,name:"朝阳"}],
+				goodslist: [], //商品列表
+				conditions:[{//筛选条件
+					id:1,name:'条件1'
+				},{
+					id:2,name:'条件2'
+				}],
+				brandId:undefined,//当前选中的筛选条件
+				comId:2,//一级条件ID
+				page:1,
+				size:10,
+				loading:true,
+				
+			};
+		},
+		onLoad() {
+			this.loadData();
+		},
+		methods:{
+			async loadData() {
+				var that = this;
+				that.$http({ //调用接口
+					method: 'GET',
+					url: this.global.target + "/wx/company/listyuyue" //this指data
+				}).then(function(response) { //接口返回数据
+					var list = response.data.data.list;
+					that.comList =list; 
+					that.comId=list[0].id;
+				}, function(error) {})
+				this.loadBand();
+				
+			},
+			async loadBand() {
+				var that = this;
+				that.$http({ //调用接口
+					method: 'GET',
+					params:{
+						comId:this.comId
+					},
+					url: this.global.target + "/wx/brand/list" //this指data
+				}).then(function(response) { //接口返回数据
+					that.conditions=response.data.data.list;
+				}, function(error) {})
+				
+				this.loadGoods(1);
+			},
+			async loadGoods(type) {
+				var loading =this.loading;
+				if(loading==true){
+					var that = this;
+					var page=that.page;
+					var size = that.size;
+					that.$http({ //调用接口
+						method: 'GET',
+						params:{
+							comId:this.comId,
+							brandId:this.brandId,
+							page:this.page,
+							limit:this.size
+						},
+						url: this.global.target + "/wx/tablelist/yuyue" //this指data
+					}).then(function(response) { //接口返回数据
+						console.log( response.data.data)
+						var total = response.data.data.total;
+						if(total==0){
+							that.$api.msg("无数据");
+						}
+						var num = page*size;
+						if(total<=num){
+							that.loading=false;
+						}
+						var glist = response.data.data.list;
+						if(type){
+							that.goodslist=glist;
+							document.documentElement.scrollTop = 0;
+						}else{
+							glist.forEach(item=>{
+								that.goodslist.push(item);
+							})
+						}
+						that.page++;
+						uni.hideLoading()
+					}, function(error) {})
+				}
+				
+			},
+			
+			//详情页
+			navToDetailPage(item) {
+				//测试数据没有写id，用title代替
+				let id = item.title;
+				uni.navigateTo({
+					url: `/pages/product/product?id=${id}&from=appointment`
+				})
+			},
+			changecondition(id){//切换筛选条件
+				this.brandId=id;
+				this.loading=true;
+				this.page=1;
+				this.loadGoods(1);
+			},
+			changeAirport(id){
+				this.comId=id;
+				this.loading=true;
+				this.page=1;
+				this.loadBand(id);
+				this.loadGoods(1);
+			}
+			
+		}
+	}
+</script>
+
+<style lang="scss">
+.appointment{
+	background:  #ece9e9;
+	padding: 1upx 0 0 0;
+}
+.am_list,
+.conditions{
+	display: flex;
+	display: -webkit-flex;
+	width: 100vw;
+	height: 200upx;
+	padding: 0 20upx;
+	box-sizing: border-box;
+	background: #fff;
+}
+.am_list{
+	width: 96vw;
+	margin: 2vw;
+	background: #fff;
+	border-radius: 20upx;
+	box-shadow: 0 0 10upx 10upx #ece9e9;
+	position: relative;
+	z-index: 2;
+}
+.am_list .am_li{
+	flex:1;
+	text-align: center;
+	line-height: 200upx;
+	font-size: 44upx;
+	
+}
+
+.am_list .am_name{
+	width: 90%;
+	height: 80upx;
+	line-height: 80upx;
+	border-radius: 40upx;
+	// border:1px solid #FA436A;
+	margin:60upx auto;
+	color: #FA436A;
+}
+.am_list .am_active{
+	// background: #FA436A;
+	// color: #fff;
+	box-shadow: 0 0 10upx 10upx #FA436A;
+	// text-shadow: 2upx 2upx 2upx  #FA436A;
+}
+
+.selectcompanyitem{
+	 background-color:antiquewhite
+	
+}
+.conditions{
+	height: 140upx;
+	line-height: 96upx;
+	white-space: nowrap;
+	font-size: 32upx;
+	color: #666;
+	border-top: 1upx solid #f8f8f8;
+	margin: -40upx 0 0 0;
+	padding: 40upx 0 0 0;
+	}
+	.conditions .conditions_li{
+		display: inline-block;
+		padding: 0 40upx;
+		box-sizing: border-box;
+		flex-shrink: 0;
+	}
+	.conditions .active{
+		color: #FA436A;
+		border-bottom: 4upx solid #FA436A;
+	}
+.guess-section {
+		display: flex;
+		flex-wrap: wrap;
+		padding: 20upx 30upx 0;
+		background: #fff;
+		margin: 20upx 0 100upx 0;
+		.guess-item {
+			display: flex;
+			flex-direction: column;
+			width: 48%;
+			padding-bottom: 40upx;
+
+			&:nth-child(2n+1) {
+				margin-right: 4%;
+			}
+		}
+
+		.image-wrapper {
+			width: 100%;
+			height: 330upx;
+			border-radius: 3px;
+			overflow: hidden;
+
+			image {
+				width: 100%;
+				height: 100%;
+				opacity: 1;
+			}
+		}
+
+		.title {
+			font-size: $font-lg;
+			color: $font-color-dark;
+			line-height: 80upx;
+		}
+
+		.price {
+			font-size: $font-lg;
+			color: $uni-color-primary;
+			line-height: 1;
+		}
+		}
+</style>

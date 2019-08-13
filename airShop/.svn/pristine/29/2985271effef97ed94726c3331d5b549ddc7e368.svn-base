@@ -1,0 +1,613 @@
+<template>
+	<view class="submitam">
+		<view v-for="(item,index) in goodsList" :key=index>
+		<!-- 预约信息 -->
+			<view class="sam_info">
+				<view class="info_left">
+					<image :src="item.cart.picUrl" class="goodimg" mode=""></image>
+				</view>
+				<view class="info_right">
+					<view class="title">
+						{{item.cart.goodsName}}
+					</view>
+					<view class="info_other">
+						<view class="info_li" v-for="(it,j) in item.cart.specifications">
+							<text>{{it}}</text>
+						</view>
+						<!-- <view class="info_li">
+							<text>尺码</text>：<text>S</text>
+						</view> -->
+					</view>
+					<view class="info_price">
+						<view class="price">
+							<text>￥:</text><text class="num">{{item.cart.price}}</text>
+						</view>
+						<view class="add_dis">
+							<!-- <view class="dis" @click="disnum">
+								<image :src="yuyue_num<2?(disimg+'2.png'):(disimg+'1.png')" mode="" class="opimg"></image>
+							</view>
+							<input type="number" :value="yuyue_num" v-model="yuyue_num" />
+							<view class="add" @click="addnum">
+								<image :src="addimg" mode="" class="opimg"></image>
+							</view> -->
+							<input type="number" :value="item.cart.number"  />
+						</view>
+					</view>
+				</view>
+			</view>
+			<!-- 预约信息 end-->
+			<!-- 取货门店 +时间-->
+			<view class="sam_mendian_time">
+				<view class="mendian">
+					<view class="mendian_left">
+						取货门店：
+					</view>
+					<view class="mendian_right">
+						<view class="mendian_li" v-for="(it,ind) of item.storeList" :key="ind">
+							<text class="address">{{it.name}}</text>
+							<checkbox-group  @change="checkaddress(index,ind)">
+								<label class="checkbox">
+									<checkbox class="box" :value="item.address" :checked="item.storeList[ind].seleted" />
+								</label>
+							</checkbox-group>
+						</view>
+					</view>
+				</view>
+				<view class="time">
+					<view class="time_left">
+						取货时间：
+					</view>
+					<view class="time_right">
+						<picker mode="time" class="p_time" :value="time" start="09:01" end="21:01" @change="bindTimeChange">
+							<view class="uni-input">{{item.time}}></view>
+						</picker>
+						<picker mode="date" class="p_data" :value="date" :start="date" :end="end" @change="bindDateChange()">
+							<view class="uni-input">{{item.date}}</view>
+						</picker>
+					</view>
+				</view>
+			</view>
+			<!-- 取货门店 +时间 end-->
+			<!-- 取货时间规则+门店信息+发票*** -->
+			<view class="sam_tmf">
+				<view class="time">
+					取货时间的规则详情
+				</view>
+				<view class="tmf_mendian"  v-for="(it,ind) of item.storeList" :key="ind" v-if="it.seleted==true">
+					 <view class="tmf_address">
+						<view class="tml_left">
+							门店详细地址：
+						</view>
+						<view class="tmf_right">
+							{{it.comName}}{{it.posdes}}{{it.name}}
+						</view>
+					</view>
+					<view class="tmf_address">
+						<view class="tml_left">
+							门店联系电话
+						</view>
+						<view class="tmf_right">
+							{{it.phone}}
+						</view>
+					</view>
+				</view>
+				<view class="tmf_list">
+					<view class="dingdan_li">
+						<view class="dingd_left">
+							发票
+						</view>
+						<view class="dingd_right">
+							预约商品线下开具
+						</view>
+					</view>
+					<view class="dingdan_li">
+						<view class="dingd_left">
+							优惠券
+						</view>
+						<view class="dingd_right">
+							无可用优惠券
+						</view>
+					</view>
+					<!-- <view class="dingdan_li">
+						<view class="dingd_left">
+							<text>积分</text>
+							<text class="jifen">共<text class="">78</text>,满100可用</text>
+						</view>
+						<view class="dingd_right">
+							可抵用0.00元
+						</view>
+					</view> -->
+				</view>
+				<view class="shou_list">
+					<view class="shou_li">
+						<view class="shou_left">
+							商品售价（以门店实际售价为准）
+						</view>
+						<view class="shou_right">
+							<text>￥</text>{{item.cart.price*item.cart.number}}
+						</view>
+					</view>
+					<!-- <view class="shou_li">
+						<view class="shou_left">
+							促销活动
+						</view>
+						<view class="shou_right color_red">
+							<text>-￥</text>4
+						</view>
+					</view> -->
+				</view>
+			</view>
+			<!-- 取货时间规则+门店信息+发票*** end-->
+		</view>
+		<!-- 确认预约 -->
+		<view class="confirm">
+			<view class="last_price">
+				<view class="price_left">
+					总金额
+				</view>
+				<view class="price_right">
+					￥{{goodsTotalPrice}}
+				</view>
+			</view>
+			<view class="confirm_btn" @click="recommandOrder">
+				确认预约
+			</view>
+		</view>
+		<!-- 确认预约 end-->
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				comId:0,
+				goodsTotalPrice:0,
+				goodsList:[
+					{
+						cart:{},
+						storeList:[],
+						time:'12:00',
+						date:'2019-01-01'
+					}
+					
+				],
+				time: '12:00', //取件时间
+				// disimg: '../../static/dis', //减号
+				// addimg: '../../static/add1.png', //加号
+				date:'',//选择送达日期
+				end:'',//选择送达日期的结束时间
+				goodsId:"",
+				cartIds:"",
+			};
+		},
+		onLoad(option) {
+			this.nowDate();
+			let goodId = option.goodId;
+			this.goodsId=goodId;
+			let number = option.number;
+			let numbers = option.numbers;
+			let cartIds = option.cartIds;
+			this.cartIds=cartIds;
+			let comId = option.comId;
+			this.comId=comId;
+			this.loadData(goodId,number,cartIds,numbers);
+		},
+		methods: {
+			loadData(goodId,number,cartIds,numbers){
+				var that = this;
+				if(goodId && goodId!=null && goodId !="" && number!=null && number !="" ){
+					that.$http({ //调用接口
+						method: 'POST',
+						params:{
+							goodId:goodId,
+							number:number,
+							comId:that.comId
+						},
+						url: this.global.target + "/wx/cart/recomandcheckoutinfo" //this指data
+					}).then(function(response) { //接口返回数据
+						console.log(response)
+						var result = response.data;
+						if(result.errno == 0){
+							let goodsList = result.data.checkedGoodsList;
+							goodsList.forEach(item=>{
+								that.$set(item.storeList[0], 'seleted', true);
+								item.time=that.time;
+								item.date=that.date;
+							})
+							that.goodsList=result.data.checkedGoodsList;
+							that.goodsTotalPrice=result.data.goodsTotalPrice;
+						}else{
+							this.$api.msg(result.errmsg)
+						}
+					}, function(error) {})
+				}else if(cartIds && cartIds!=null && cartIds !="" && numbers!=null && numbers !="" ){
+					that.$http({ //调用接口
+						method: 'POST',
+						params:{
+							cartIds:cartIds,
+							numbers:numbers,
+							comId:that.comId
+						},
+						url: this.global.target + "/wx/cart/recomandcheckoutinfo" //this指data
+					}).then(function(response) { //接口返回数据
+						console.log(response)
+						var result = response.data;
+						if(result.errno == 0){
+							let goodsList = result.data.checkedGoodsList;
+							goodsList.forEach(item=>{
+								that.$set(item.storeList[0], 'seleted', true);
+								item.time=that.time;
+								item.date=that.date;
+							})
+							that.goodsList=result.data.checkedGoodsList;
+							that.goodsTotalPrice=result.data.goodsTotalPrice;
+						}else{
+							
+						}
+					}, function(error) {})
+				}
+			},
+			recommandOrder(){//下单预约
+				var goodsId=0;
+				var number=0;
+				var time="";
+				var storeId=0;
+				var cartIds="";
+				var times="";
+				var storeIds="";
+				if(this.goodsId && this.goodsId!=null && this.goodsId !="" ){
+					for(var i=0;i<this.goodsList.length;i++){
+						let obj = this.goodsList[i];
+						let cart = obj.cart;
+						goodsId=cart.productId;
+						number=cart.number;
+						time=obj.date +" "+obj.time;
+						for(var j =0;j< obj.storeList.length;j++){
+							console.log(j)
+							console.log(obj.storeList[j])
+							let store = obj.storeList[j];
+							if(store.seleted==true){
+								storeId=store.id;
+							}
+						}
+					}
+				}else if(this.cartIds && this.cartIds!=null && this.cartIds !="" ){
+					for(var i=0;i<this.goodsList.length;i++){
+						let obj = this.goodsList[i];
+						console.log(obj)
+						let cart = obj.cart;
+						cartIds+=cart.id+",";
+						times+=obj.date +" "+obj.time+",";
+						for(var j =0;j< obj.storeList.length;j++){
+							console.log(j)
+							console.log(obj.storeList[j])
+							let store = obj.storeList[j];
+							if(store.seleted==true){
+								storeIds+=store.id+",";
+							}
+						}
+					}
+				}
+				
+			
+				var that=this;
+				that.$http({ //调用接口
+						method: 'POST',
+						params:{
+							goodId:goodsId,
+							number:number,
+							time:time,
+							storeId:storeId,
+							storeIds:storeIds,
+							cartIds:cartIds,
+							times:times,
+							comId:that.comId
+						},
+						url: this.global.target + "/wx/order/submitcommand" //this指data
+				}).then(function(response) { //接口返回数据
+						console.log(response)
+						var result = response.data;
+						if(result.errno == 0){
+							uni.navigateTo({
+								url: `/pages/submitam/order?state=0`
+							})
+						}else{
+							that.$api.msg(result.errmsg)
+						}
+					}, function(error) {})
+				
+				
+			},
+			nowDate(){
+				var date=new Date();
+				var month=(date.getMonth()+1)>9?(date.getMonth()+1):'0'+(date.getMonth()+1);
+				var day=date.getDate()>9?date.getDate():('0'+date.getDate())
+				var endmonth=(date.getMonth()+2)>9?(date.getMonth()+2):('0'+(date.getMonth()+2));
+				this.date=date.getFullYear()+'-'+month+'-'+day;
+				this.end=date.getFullYear()+'-'+endmonth+'-'+day;
+				console.log(this.date,this.end)
+			},
+			disnum() { //减少件数
+				var yuyue_num = this.yuyue_num - 1;
+				if (yuyue_num > 0) {
+					this.yuyue_num = yuyue_num;
+				}
+			},
+			addnum() { //增加件数
+				var yuyue_num = parseInt(this.yuyue_num) + 1;
+				console.log(yuyue_num)
+				this.yuyue_num = yuyue_num;
+			},
+			checkaddress(numb,index) { //选择地址
+				let storeList=this.goodsList[numb].storeList;
+				storeList.forEach(item=>{
+					item.seleted=false;
+				})
+				this.goodsList[numb].storeList[index].seleted=true;
+			},
+			bindDateChange(e){
+				console.log(e)
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	.sam_info,
+	.info_price,
+	.info_price .add_dis,
+	.mendian,
+	.sam_mendian_time .time,
+	.tmf_address,
+	.tmf_list .dingdan_li,
+	.shou_list .shou_li,
+	.last_price,
+	.mendian_right .mendian_li{
+		display: flex;
+		display: -webkit-flex;
+		padding: 20upx 20upx;
+		box-sizing: border-box;
+		background: #fff;
+	}
+
+	.submitam {
+		background: #f8f8f8;
+	}
+
+	.sam_info {
+		padding: 30upx 20upx 0;
+	}
+
+	.info_left {
+		width: 250upx;
+		height: 250upx;
+		flex-shrink: 0;
+		-webkit-flex-shrink: 0;
+	}
+
+	.info_left .goodimg {
+		width: 95%;
+		height: 100%;
+	}
+
+	.info_right {
+		flex: 1;
+		-webkit-flex: 1;
+	}
+
+	.info_right .title {
+		font-size: 36upx;
+		line-height: 50upx;
+		margin: 10upx 0;
+	}
+
+	.info_other {
+		font-size: 28upx;
+		color: #333;
+	}
+
+	.info_other .info_li {
+		padding-left: 20upx;
+		box-sizing: border-box;
+		line-height: 34upx;
+	}
+
+	.info_price {
+		font-size: 30upx;
+		color: #666;
+		justify-content: space-between;
+		-webkit-justify-content: space-between;
+	}
+
+	.info_price .num {
+		font-size: 36upx;
+		color: #fa436a;
+		font-weight: bold;
+	}
+
+	.info_price .add_dis {
+		width: 230upx;
+		height: 60upx;
+		border: 1upx solid #f8f8f8;
+		border-radius: 8upx;
+		line-height: 56upx;
+		padding: 0;
+		text-align: center;
+	}
+
+	.info_price .add_dis .add,
+	.info_price .add_dis .dis {
+		width: 65upx;
+		height: 56upx;
+		flex-shrink: 0;
+		-webkit-flex-shrink: 0;
+	}
+
+	.info_price .add_dis .opimg {
+		width: 40upx;
+		height: 40upx;
+		margin: 10upx auto;
+	}
+
+	.info_price .add_dis input {
+		width: 100upx;
+		height: 56upx;
+	}
+
+	// <!-- 预约信息 end-->
+	// <!-- 取货门店 +时间-->
+	.sam_mendian_time {
+		padding: 0 0 30upx 0;
+		box-sizing: border-box;
+		background: #fff;
+	}
+
+	.mendian {
+		margin: 20upx 0 0;
+		border-bottom: 1px solid #f8f8f8;
+	}
+
+	.mendian .mendian_left,
+	.time .time_left,
+	.tmf_address .tml_left {
+		font-size: 34upx;
+		font-weight: bold;
+		margin: 20upx 0 0;
+		color: #666;
+		width: 250upx;
+		flex-shrink: 0;
+		-webkit-flex-shrink: 0;
+	}
+.mendian .mendian_left{
+	width: 170upx;
+}
+	.mendian .mendian_right,
+	.time .time_right {
+		font-size: 28upx;
+		color: #333;
+		flex: 1;
+		-webkit-flex: 1;
+	}
+.time .time_right .p_data,
+.time .time_right .p_time{
+	float: right;
+	margin: 0 0 0 20upx;
+}
+	.mendian_right .mendian_li {
+		// height: 50upx;
+		justify-content: space-between;
+		-webkit-justify-content: space-between;
+	}
+
+.mendian_right .mendian_li .address{
+	display: block;
+		line-height: 60upx;
+}
+	.mendian_right .mendian_li .checkbox,
+	.mendian_right .mendian_li .checkbox .box {
+		float: right;
+		width: 50upx;
+		height: 50upx;
+		margin: 0;
+	}
+
+	.time .time_right {
+		text-align: right;
+		color: #fa436a;
+		font-size: 32upx;
+		margin: 20upx 0 0;
+	}
+
+	// <!-- 取货门店 +时间 end-->
+	// <!-- 取货时间规则+门店信息+发票*** -->
+	.sam_tmf {
+		margin: 20upx 0 0;
+		background: #fff;
+		padding: 20upx;
+		box-sizing: border-box;
+	}
+
+	.sam_tmf .time {
+		font-size: 30upx;
+		color: #666;
+		height: 100upx;
+		line-height: 100upx;
+		background: #f8f8f8;
+		text-align: center;
+		text-decoration: underline;
+	}
+
+	.tmf_mendian {
+		margin: 10upx 0 0 0;
+		font-size: 32upx;
+		line-height: 60upx;
+	}
+
+	.tmf_address .tml_left {
+		margin: 0;
+	}
+
+	.tmf_list {
+		padding: 20upx 0;
+		margin: 0 0 30upx 0;
+		border-bottom: 1px solid #f8f8f8;
+	}
+
+	.tmf_list .dingdan_li,
+	.shou_list .shou_li {
+		justify-content: space-between;
+		-webkit-justify-content: space-between;
+		font-size: 30upx;
+		color: #666;
+		padding: 0;
+		line-height: 60upx;
+	}
+
+	.shou_list .shou_li {
+		padding: 10upx 20upx;
+		line-height: 40upx;
+		background: #f8f8f8;
+	}
+
+	.dingd_left .jifen {
+		margin: 0 0 0 10upx;
+	}
+
+	.dingd_left .jifen text {
+		color: #fa436a;
+	}
+
+	.color_red {
+		color: #fa436a;
+	}
+
+	// <!-- 取货时间规则+门店信息+发票*** end-->
+	// <!-- 确认预约 -->
+	.confirm {
+		background: #fff;
+		margin: 20upx 0 0;
+		padding-bottom: 40upx;
+	}
+
+	.last_price {
+		color: #fa436a;
+		font-size: 32upx;
+		justify-content: space-between;
+		-webkit-justify-content: space-between;
+	}
+
+	.confirm_btn {
+		width: 300upx;
+		height: 76upx;
+		border-radius: 200upx;
+		background: #fa436a;
+		margin: 20upx auto 40upx;
+		box-shadow: 2upx 4upx 10upx rgba(219, 63, 96, 0.4);
+		background: linear-gradient(to right, #ffac30, #fa436a, #f56c6c);
+		text-align: center;
+		font-size: 32upx;
+		color: #fff;
+		line-height: 76upx;
+	}
+</style>

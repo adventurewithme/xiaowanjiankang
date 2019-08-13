@@ -1,0 +1,119 @@
+<template>
+	<view class="appointment">
+		<!-- 三个icon -->
+		<view class="am_list">
+			<view class="am_li">
+				am1
+			</view>
+			<view class="am_li">
+				am2
+			</view>
+			<view class="am_li">
+				am3
+			</view>
+		</view>
+		<!-- 三个icon end-->
+		<!-- 商品列表 -->
+		<view class="guess-section">
+			<view v-for="(item, index) in goodslist" :key="index" class="guess-item" @click="navToDetailPage(item)">
+				<view class="image-wrapper">
+					<image :src="item.image" mode="aspectFill"></image>
+				</view>
+				<text class="title clamp">{{item.title}}</text>
+				<text class="price">￥{{item.price}}</text>
+			</view>
+		</view>
+		<!-- 商品列表 end-->
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				goodslist: [], //商品列表
+			};
+		},
+		onLoad() {
+			this.loadData();
+		},
+		methods:{
+			async loadData() {
+				var that = this;
+				let goodList = await this.$api.json('goodsList');
+				this.goodslist = goodList;
+			},
+			//详情页
+			navToDetailPage(item) {
+				//测试数据没有写id，用title代替
+				let id = item.title;
+				uni.navigateTo({
+					url: `/pages/product/product?id=${id}&from=appointment`
+				})
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+.appointment{
+	background: #f8f8f8;
+}
+.am_list{
+	display: flex;
+	display: -webkit-flex;
+	width: 100vw;
+	height: 200upx;
+	padding: 0 20upx;
+	box-sizing: border-box;
+	background: #fff;
+}
+.am_list .am_li{
+	flex:1;
+	text-align: center;
+	line-height: 200upx;
+	font-size: 44upx;
+}
+.guess-section {
+		display: flex;
+		flex-wrap: wrap;
+		padding: 20upx 30upx 0;
+		background: #fff;
+		margin: 20upx 0 100upx 0;
+		.guess-item {
+			display: flex;
+			flex-direction: column;
+			width: 48%;
+			padding-bottom: 40upx;
+
+			&:nth-child(2n+1) {
+				margin-right: 4%;
+			}
+		}
+
+		.image-wrapper {
+			width: 100%;
+			height: 330upx;
+			border-radius: 3px;
+			overflow: hidden;
+
+			image {
+				width: 100%;
+				height: 100%;
+				opacity: 1;
+			}
+		}
+
+		.title {
+			font-size: $font-lg;
+			color: $font-color-dark;
+			line-height: 80upx;
+		}
+
+		.price {
+			font-size: $font-lg;
+			color: $uni-color-primary;
+			line-height: 1;
+		}
+		}
+</style>

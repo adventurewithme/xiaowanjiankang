@@ -1,0 +1,74 @@
+<template>
+	<view class="waitpay">
+		<!-- top -->
+		<view class="wp-top">
+			<view class="wx-top-p1">
+				<image src="/static/newimg/wait.png" mode=""></image>
+				<text>等待支付</text>
+			</view>
+			<view class="wp-top-p2">
+				需付款：<text class="red">{{goods.price}}</text>
+			</view>
+			<view class="wp-top-p3">
+				请在<text class="red">30分钟内</text>完成付款，过时订单将会取消
+			</view>
+		</view>
+		<!-- top end-->
+		<!-- center -->
+		<!-- center end-->
+		<!-- bottom -->
+		<!-- bottom end -->
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				goods:{
+					price:123
+				}
+			};
+		}
+	}
+</script>
+
+<style lang="scss">
+	page {
+		background: #f7f7f7;
+	}
+
+	.wp-top {
+		text-align: center;
+		background: #fff;
+		padding: 53upx 0 0 0;
+		.wx-top-p1 {
+			color: #FF0000;
+			font-size: 31upx;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			image {
+				width: 33upx;
+				height: 34upx;
+				margin: 0 9upx 0 0;
+			}
+		}
+		.wp-top-p2{
+			font-size: 24upx;
+			margin: 24upx 0 10upx 0;
+			font-weight: bold;
+			.red{
+				&:before{
+					content:'￥'
+				}
+			}
+		}
+		.wp-top-p3{
+			font-size: 24upx;
+		}
+	}
+	.red{
+		color: #FF0000;
+	}
+</style>
