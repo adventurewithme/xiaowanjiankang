@@ -1,0 +1,50 @@
+.change{
+    margin: 20px 0;
+}
+
+.clear{
+    clear: both;
+}
+table{
+    width: 100%;
+    margin: 10px 0 0;
+}
+
+.hide{
+    display: none
+}
+.nav>li>a{
+    padding: 10px 20px;
+}
+.change{
+    width: 100%;
+    display: flex;
+}
+.wrapper-content{
+    background: #fff;
+}
+.col-lg-6 .input-group{
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+.col-lg-6 .input-group>span{
+    flex-shrink: 0;
+}
+.input-group .dropdown-menu{
+    margin: 20px 0;
+    /* display: block; */
+}
+.input-group .dropdown-menu tbody{
+    display: flex;
+    flex-wrap: wrap;
+}
+.input-group .dropdown-menu tbody tr{
+    flex-shrink: 0;
+    margin: 3px;
+    border-radius: 2px;
+    padding: 0 10px;
+}
+.input-group .dropdown-menu tbody tr>td{
+    border-top: none;
+}

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+
+<!-- Mirrored from www.zi-han.net/theme/hplus/suggest.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Jan 2016 14:19:42 GMT -->
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--360浏览器优先以webkit内核解析-->
+
+
+    <title>H+ 后台主题UI框架 - 搜索建议</title>
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <!-- <link href="css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet"> -->
+
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link href="css/style.min862f.css?v=4.1.0" rel="stylesheet">
+    <link rel="stylesheet" href="css/add.css">
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content">
+        <div class="row">
+            <div class="ibox-title">
+                <!-- <h5>基本</h5> -->
+                <button class="btn btn-primary">添加训练</button>
+            </div>
+
+            <div class="ibox-content">
+                <ul class="nav nav-pills">
+                    <li role="presentation" class="active"><a href="#exampleTableFromData1">训练一</a></li>
+                    <!-- <li role="presentation"><a href="#exampleTableFromData2">Profile</a></li> -->
+                    <!-- <li role="presentation"><a href="#">Messages</a></li> -->
+                </ul>
+                <div class="row row-lg">
+                    <div class="col-sm-12">
+                        <div class="example">
+                            <table class="table" id="exampleTableFromData1" data-mobile-responsive="true">
+                                <thead>
+                                    <tr>
+                                        <th data-field="id">序号</th>
+                                        <th data-field="name">动作名称</th>
+                                        <th data-field="video">动作视频名</th>
+                                        <th data-field="size">动作类型</th>
+                                        <th data-field="length">动作长度</th>
+                                        <th data-field="hot">消耗热量</th>
+                                        <th data-field="operation">操作</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <!-- <div class="ibox-title"> -->
+                        <!-- <div class="ibox-content"> -->
+
+                            <form action="" method="get" accept-charset="utf-8" role="form">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="input-group">
+                                            <span>方案动作：</span>
+                                            <input type="text" placeholder="可搜索选择哦" class="form-control" id="test_data">
+                                            <div class="input-group-btn">
+                                                <!-- <button type="button" class="btn btn-white dropdown-toggle"
+                                                    data-toggle="dropdown">
+                                                    <span class="caret"></span>
+                                                </button> -->
+                                                <ul class="dropdown-menu dropdown-menu-right" id="ans" role="menu">
+                                                </ul>
+                                            </div>
+                                            <!-- /btn-group -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+
+                            </form>
+                        <!-- </div> -->
+                    <!-- </div> -->
+                </div>
+            </div>
+        </div>
+
+        <script src="js/jquery.min.js?v=2.1.4"></script>
+        <script src="js/bootstrap.min.js?v=3.3.6"></script>
+        <script src="js/content.min.js?v=1.0.0"></script>
+        <script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+        <script src="js/demo/bootstrap-table-demo.min.js"></script>
+        <script src="js/plugins/suggest/bootstrap-suggest.min.js"></script>
+        <script src="js/add.js"></script>
+        <script type="text/javascript">
+            var testdataBsSuggest = $("#test_data").bsSuggest({
+                // indexId: 2,
+                // indexKey: 1,
+                 url: '/json/adds.json',
+                // data: {
+                //     "value": [
+                //         { "name": "0sss"},
+                //     ]
+                // }
+            });
+            $("form").submit(function (e) {
+                 return false });
+        </script>
+</body>
+
+
+<!-- Mirrored from www.zi-han.net/theme/hplus/suggest.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Jan 2016 14:19:43 GMT -->
+
+</html>

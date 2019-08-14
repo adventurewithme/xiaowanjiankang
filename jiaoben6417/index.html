@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>jQuery多级联动菜单选中代码 - 站长素材</title>
+
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/tntreebox.js"></script>
+	<!-- <script src="tntreebox(2).js"></script> -->
+	<!-- <script src="new_tntreebox.js"></script> -->
+	<link rel="stylesheet" href="css/bootstrap.min14ed.css">
+	<link rel="stylesheet" type="text/css" href="css/tntreebox.css" />
+	<link rel="stylesheet" href="css/index.css">
+</head>
+
+<body class="body">
+	<div class="title">
+		<div class="col-sm-1">方案动作：</div>
+		<input type="text" class="col-sm-2 ipt" placeholder="请选择源动作"> 
+		<div class="col-sm-8"></div>
+	</div>
+	<div id='treebox'></div>
+	<div class="tntreebox"></div>
+	<script type="text/javascript">
+		$(function () {
+			tnTreeBox('treebox', 'checkboxname', data, ['o_1', 'o_2']);
+		});
+	</script>
+
+	</div>
+</body>
+<script>
+	$('.ipt').click(function () {
+		// console.log('s')
+		$('#treebox').show();
+	});
+	document.body.onclick = function (e) {
+		// console.log(e.target.className,e.target,e.target.tagName)
+		var classname=e.target.className;
+		if(classname=='body'||classname=='list'){
+			$('#treebox').hide();
+		}
+		// document.getElementById('treebox').style.display = "none"
+	}
+</script>
+</html>
